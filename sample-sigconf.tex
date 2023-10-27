@@ -1,0 +1,106 @@
+%\documentclass[sigconf, authordraft]{acmart}
+\documentclass[sigconf]{acmart}
+%\documentclass[conference]{IEEEtran}
+%\IEEEoverridecommandlockouts
+
+\usepackage{booktabs} % For formal tables
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{caption}
+\usepackage{subcaption}
+\graphicspath{ {./fig/} }
+
+%\usepackage{cite}
+%\usepackage[]{tikz}
+%\usetikzlibrary{calc}
+
+%\usepackage[style=ACM-Reference-Format,backend=bibtex,sorting=none]{biblatex}
+%\addbibresource{sample-bibliography.bib}
+
+% Copyright
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+
+% These commands are optional
+%\acmBooktitle{Transactions of the ACM Woodstock conference}
+%\editor{Jennifer B. Sartor}
+%\editor{Theo D'Hondt}
+%\editor{Wolfgang De Meuter}
+
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+
+%\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage{algorithmic}
+%\usepackage{graphicx}
+%\usepackage{textcomp}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage{listings}
+%\usepackage{hyperref}
+\usepackage{amsmath}
+
+%\lstset{style=mystyle}
+
+%\makeatletter
+%\newcommand{\linebreakand}{%
+%  \end{@IEEEauthorhalign}
+%  \hfill\mbox{}\par
+%  \mbox{}\hfill\begin{@IEEEauthorhalign}
+%}
+%\makeatother
+
+
+
+% --------------- DELETE AT THE END ---------------
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes} 
+% -------------------------------------------------
+
+
+%\acmConference[]{Assignment 2}{2023}{Amsterdam, Netherlands}
+\begin{document}
+\title{EvoMan: Adaptive Differential Evolution Method and Tournament Selection Method on training Generalist Agent}
+\subtitle{Evolutionary Computing - Task 2: Generalist Agent\\Team 75 - \today}
+
+%%% The submitted version for review should be ANONYMOUS
+\author{Jiayi Yao}
+\affiliation{
+  \studentID{2776012}
+}
+\email{j.yao3@student.vu.nl}
+
+%\author{Hui Cheng}
+%\affiliation{
+%  \studentID{2802132}
+%}
+%\email{h.cheng@student.vu.nl}
+
+\author{Zhiyan Yao}
+\affiliation{
+  \studentID{2765604}
+}
+\email{z.yao2@student.vu.nl}
+
+%\author{Lijing Luo}
+%\affiliation{
+%  \studentID{2794795}
+%}
+%\email{lijing.luo@student.uva.nl}
+
+\maketitle
+\clearpage
+\input{samplebody-conf}
+
+%\LaTeX{} \cite{latex2e} is a set of macros built atop \TeX{} \cite{texbook}.
+\bibliography{sample-bibliography.bib} % Entries are in the refs.bib file
+%\bibliographystyle{ACM-Reference-Format}
+\bibliographystyle{plainnat} % We choose the "plain" reference style
+%\printbibliography
+
+\end{document}
