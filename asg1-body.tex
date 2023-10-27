@@ -1,0 +1,90 @@
+
+\section{Introduction}
+
+In this report, we delve into the realm of Dynamic Programming and Reinforcement Learning (DPRL) applied to the {} problem. Our specific focus lies on the implementation of the DPRL Method and %. We will apply these two evolutionary strategies to train a generalist agent and evaluate their performance based on the evolutionary progress of the entire population and the adaptability of the best individuals to beat enemies.
+
+\subsection{Experimental Hypotheses}
+Our focus centers on two critical metrics: coverage speed and the success of the best solutions. In the context of the mechanisms of the two EAs, we posit the following hypotheses:
+
+\begin{enumerate}[label=(\roman*)]
+    \item\textbf{Hypothesis 1:} The Differential Evolution (DE) method will exhibit a higher coverage speed compared to the Tournament method.
+    \item\textbf{Hypothesis 2:} The ultimate solutions in the population of the Tournament method will demonstrate better diversity after same generations of DE when coverage happens.
+\end{enumerate}
+%\subsection{Description of model}
+
+\section{Methods}
+%Methods: explain how your algorithms work and its motivation, parameter settings, experimental setup, fitness function, budget, etc. Make sure everything is reproducible with the information presented!
+
+%In this section, we provide an overview of the essential elements of our evolutionary algorithms (EAs) and experiment.
+\subsection{Algorithm Design}
+
+%some setting
+\begin{table}
+    \centering
+    \caption{Parameter applying to both EAs}
+    \label{tab:my_label}
+    \begin{tabular}{@{}cc@{}}
+     \hline %\midrule
+        Parameter & Value \\ \hline
+        Population Size & 100 \\
+        Generation & 40 \\
+        Offspring (per gen) & 200 \\
+        Crossover Prob & 100\% \\
+        Mutation Prob & 20\%  \\
+        Tournament members (k) & 2 \\
+        Opponent size (Bound-Robin) & 10 \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Initialization}
+
+
+\subsubsection{}
+%For evaluating the quality of solutions, we use a default fitness function provided by the framework. This can minimize the risk of overfitting due to the small training set of 8 enemies. Specifically, the individual fitness is calculated by subtracting the standard deviation from the mean individual fitness. The fitness function is defined as:
+%some fomula
+\begin{align*}
+    individual\_fitness & = 0.9 * (100 - enemy\_hp)
+    \\ &+ 0.1* player\_hp - log (time)
+\end{align*}
+
+\subsubsection{Tuning and Unsolved problems}
+\label{sec:improve}
+
+\subsubsection{Implementation}
+
+
+\subsection{Experimental design and setup}
+In our experiments, we set both evolutionary algorithms (EAs) to 40 generations and conducted 10 runs for each on two distinct groups of enemies, namely pairs <2,6> and <7,8>. This choice aligns with the enemy group used in Miras' genetic algorithm, allowing for meaningful comparisons.
+
+Following training, we tested the best solutions obtained from each EA on all the enemy types for a total of 10 runs. Each enemy was tested 5 times to calculate the mean fitness value.
+The Gain for each EA in testing is measured with 
+\begin{equation}
+    g = \sum \limits_{i = 1}^{n} p_i - e_i
+\end{equation}
+The selection of 40 generations was deliberate. In the case of the enemy group <2,6>, this choice allows us to observe a meaningful progression in mean fitness, highlighting any significant differences between the two EAs. However, in the case of the enemy group <7,8>, training progresses rapidly. Consequently, we opt to plot the results for only the first 10 generations, although all experiments involve the same maximum generation limit during training.
+
+\section{Results and Discussion}
+%figures
+\begin{figure*}[htbp]
+    \centering
+    \begin{subfigure}[htbp]{0.41\textwidth}
+        \centering
+        %\includegraphics[width=\textwidth]{fig/}
+        %\caption{Enemy group <7,8>}
+        \label{fig:gain_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[htbp]{0.55\textwidth}
+        \centering
+        %\includegraphics[width=\textwidth]{fig/}
+        %\caption{Enemy group <2,6>}
+        \label{fig:gain_2}
+    \end{subfigure}
+    %\caption {Fitness of 2 EAs over multiple enemies}
+    \label{fig:gain}
+\end{figure*}
+\subsection{Results}
+\subsection{Discussion}
+\section{Conclusion}
+In this report, we have %presented a thorough introduction to the design and underlying motivation of the two Evolutionary Algorithms (EAs). Through a comparative analysis of their performance in two distinct experiments, we have unveiled their strengths, potential drawbacks, and provided insights into when each EA is most suitable for a given scenario.
+%\newpage
