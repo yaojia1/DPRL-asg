@@ -30,38 +30,35 @@ knapsack_size = 10
 T = 10
 weight_max = 10
 size_possibility = 0.1
-reward = 1  # per item
-print("hello world")
-bound_s = 0
+num_runs = 1000
 
-"""
-V_t(x) = max_a{r_t(x,a)+V_{t+1}( transition(x,a) )}
-"""
+def optimal_policy():
+    """
+    V_t(x) = max_a{r_t(x,a)+V_{t+1}( transition(x,a) )}
+    """
+    print("===================== Calculating policy ============================")
+    alpha = np.zeros([T, knapsack_size + 1])  # optimal policy s for action at state x
+    V = np.zeros(
+        [knapsack_size + 1, T + 1])  # value set of optimal policy, Value[time][state], last raw for ending edge
 
-alpha = np.zeros([T, knapsack_size + 1])  # optimal policy s for action at state x
-V = np.zeros([knapsack_size + 1, T + 1])  # value set of optimal policy, Value[time][state], last raw for ending edge
-
-for t in range(T)[::-1]:  # each time step
-    for x in range(weight_max + 1):  # each possible states, [0 - 10]
-        # expected reward for each action
-        Q = []
-        for s in range(x + 1):  # each possible policy s (max taken weight for x and t) [0 - 10]
-            expd_weight = 0
-            for i in range(1, s + 1):  # each possible transition path for s at state x and t, the expected value
-                expd_weight += (size_possibility * V[t + 1][x - i])
-            expd_weight += (size_possibility * (weight_max - s) * V[t + 1][x])
-            expd_weight += (s * size_possibility)
-            Q.append(expd_weight)
-        print(Q)
-        print("time:", t, "state", x, "best gained value:", np.max(Q), "at s =", np.argmax(Q))
-        V[t][x] = np.max(Q)
-        alpha[t][x] = np.argmax(Q)
-    print("optimal values: ", V[t])
-    print("optimal policy: ", alpha[t])
-
-print("optimal values: ", V)
-print("optimal policy: ", alpha)
-
+    for t in range(T)[::-1]:  # each time step
+        for x in range(weight_max + 1):  # each possible states, [0 - 10]
+            # expected reward for each action
+            Q = []
+            for s in range(x + 1):  # each possible policy s (max taken weight for x and t) [0 - 10]
+                expd_weight = 0
+                for i in range(1, s + 1):  # each possible transition path for s at state x and t, the expected value
+                    expd_weight += (size_possibility * V[t + 1][x - i])
+                expd_weight += (size_possibility * (weight_max - s) * V[t + 1][x])
+                expd_weight += (s * size_possibility)
+                Q.append(expd_weight)
+            print(Q)
+            print("time:", t, "state", x, "best gained value:", np.max(Q), "at s =", np.argmax(Q))
+            V[t][x] = np.max(Q)
+            alpha[t][x] = np.argmax(Q)
+        print("optimal values: ", V[t])
+        print("optimal policy: ", alpha[t])
+    return alpha, V
 
 def run_experiment(n=1000, batch=100):
     all_value = 0
@@ -69,9 +66,9 @@ def run_experiment(n=1000, batch=100):
     batch_value = 0
     batch_weight = 0
     generations = 0
-    data = {'reward': np.ndarray([]), 'weight': np.ndarray([]), 'best_reward': np.ndarray([]), 'best_weight': np.ndarray([])}
+    data = {'reward': np.array([]), 'weight': np.array([]), 'best_reward': np.array([]), 'best_weight': np.array([])}
 
-    def determin_solution(weights):
+    def determin_solution( weights ):
         alpha = np.zeros([T, knapsack_size + 1])  # optimal policy s for action at state x
         V = np.zeros(
             [knapsack_size + 1, T + 1])  # value set of optimal policy, Value[time][state], last raw for ending edge
@@ -129,13 +126,12 @@ def run_experiment(n=1000, batch=100):
                                      np.mean(data['best_reward']), np.mean(data['best_weight'])])
                 filewriter.writerow(["std", np.std(data['reward']), np.std(data['weight']),
                                      np.std(data['best_reward']), np.std(data['best_weight'])])
-                print("optimal best", best_optimal_index, ":", data['reward'][best_optimal_index],
+                print("optimal best at epoch", best_optimal_index, ":", data['reward'][best_optimal_index],
                       data['weight'][best_optimal_index])
-                print("determine best", best_deter_index, ":", data['best_reward'][best_deter_index],
+                print("determine best at epoch", best_deter_index, ":", data['best_reward'][best_deter_index],
                       data['best_weight'][best_deter_index])
 
                 # Creating histogram
-                #fig, ax = plt.subplots(1, 1)
                 plt.hist(data['reward'], align='left', bins=range(weight_max+1))
 
                 # Set title
@@ -146,24 +142,25 @@ def run_experiment(n=1000, batch=100):
                 plt.ylabel('count')
 
                 # Make some labels.
-                #rects = plt.patches
                 labels = [i for i in range(weight_max)]
 
-                #for rect, label in zip(rects, labels):
-                    #height = rect.get_height()
-                    #ax.text(rect.get_x() + rect.get_width() / 2, height+0.01, int(height),
-                            #ha='center', va='bottom')
-                #plt.xticks(labels)
                 plt.xticks(labels)
-                #plt.grid(axis='y', alpha=0.75)
-                #plt.xlabel('Value')
-                #plt.ylabel('Frequency')
-                #range_h = np.arange(0, 11, 1)
-                #print(range_h)
-                #plt.hist(data['reward'][:1000], align='left', bins=range_h, edgecolor = 'black', histtype='stepfilled')
 
                 plt.show()
                 plt.savefig('data/'+expname+"/result")
+
+                # Compare with determine solutions
+                lens = np.max(data['best_reward'] - data['reward']).astype(int)
+                plt.hist(data['best_reward'] - data['reward'], align='left', bins=range(lens + 1))
+
+                # Set title
+                plt.title("Rewards Difference")
+
+                # adding labels
+                plt.xlabel('reward')
+                plt.ylabel('count')
+                plt.xticks([i for i in range(lens+1)])
+                plt.show()
     for epoch in range(1, n + 1):
         weights = np.random.randint(low=1, high=10, size=10,
                                     dtype=int)  # [random.randint(1, knapsack_size) for x in range(T)]
@@ -179,8 +176,6 @@ def run_experiment(n=1000, batch=100):
         batch_weight += weight
         data['reward'] = np.append(data['reward'], value)
         data['weight'] = np.append(data['weight'], weight)
-        if value >= 8:
-            print("9!!!!!", epoch)
         determin_solution(weights)
         if epoch % batch == 0:
             all_value += batch_value / batch
@@ -193,6 +188,10 @@ def run_experiment(n=1000, batch=100):
     print("optimal average value: ", all_value / generations)
     print("average remain weight: ", all_weight / generations)
 
+alpha, V = optimal_policy()
+print("optimal values: ", V)
+print("optimal policy: ", alpha)
 
 np.random.seed(42)
-run_experiment()
+run_experiment(num_runs)
+print("Expect reward:", V[0][weight_max])
