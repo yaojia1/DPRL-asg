@@ -22,10 +22,10 @@ For the structure of the report, we will first introduce the mathematical {tbc} 
     \end{tabular}
 \end{table}
 
-In the knapstack problem, the item weights is unknown upfront, thus, in each determine time, the player need to decide whether to take the item, based on sole weight and the remaining capability of the pack, which is fixed at the beginning. 
-Specifically, the pack capicility and the items sizes are present in table \ref{tab:my_label}.
+In the knapstack problem, the item weights is unknown upfront, thus, in each time step, the player needs to decide whether to take the item, based on the single weight and the remaining capability of the knapsack, who's total size is fixed at the beginning. 
+Specifically, the sizes and other parameters are present in table \ref{tab:my_label}.
 
-The items are presented one by one, and the player make decision for each item. To formulate this problem, we set each presence of the action as one time step $t \in T:{1,2,...,10}$. The action set for each time step only depends on the time and state x, where $x \in X = {0, 1, 2, ...,10}$, representing the leftover capacity of the knapsack. Since one mustn't take an item larger than capacity, we have the equation \ref{eqo:1} of the action set. 
+To formulate this problem, we set each presence of the action as one time step $t \in T:{1,2,...,10}$. The action set for each time step only depends on the time and state $x$, where $x \in X = {0, 1, 2, ...,10}$, representing the leftover capacity of the knapsack. Since one mustn't take an item larger than capacity, we have the equation \ref{eqo:1} of the action set. 
 \begin{equation}
 \label{eqo:1}
 A_x = \left\{
@@ -37,7 +37,7 @@ A_x = \left\{
 \end{equation}
 
 \subsection{Deterministic value and transition}
-For a Deterministic problem, the transition of state only depends on the cost at the time t. Namely, if one decides to take one item at time t, then the action $a_t$ will have a cost and a reward. The cost of action is $c^t_a = a_t * weight_t$ is equal to the item's weight if taken, while the reward $r^t_a$ is also 1, and both 0 otherwise. We set the value $v_t(x)$ as the backward sum of the rewards at time t and state x, $T$for transition:
+For a Deterministic problem, the transition of state only depends on the cost at the time t. Namely, the action $a^t_x$ has a cost and a reward, where the cost of action, $c^t_a = a^t_x * weight_t$ equal to the item's weight if $a^t_x = 1$, while the reward $r^t_a$ is also 1 or 0, which would be added inductively to find the maximal value $v^t_x$ and the optimal policy for the action. Thus, for the value and transition function, we have:
 \begin{equation}
     v_t(x) = r^t_a + V_{t+1}(x-c^t_a),t\in T, x \in X, a\in A_x
 \end{equation}
@@ -46,18 +46,16 @@ For a Deterministic problem, the transition of state only depends on the cost at
 \end{equation}
 
 \subsection{Stochastic value and transition}
-
+Different from the deterministic problem, the transition at time t is stochastic, and the reward for an action is unknown. Therefore, to find the maximal value and optimal action at each state, we use the expected average of the foreseeing value $v_{t+1}$ times each transition probability, as follows:
 \begin{equation}
     T(x,a) = x - c_t'*a, c_t'\in \{1,,,10\}, p_{c=c'} = 0.1
 \end{equation}
-
 \begin{equation}
     V_t(x) = \max_{a\in A_x}(1*a_x^t + \sum_{x' = T(x,a_x^t)} V_{t+1}(x')*p(x-c=x'))
 \end{equation}
-However, this does not work, because if doing backward induction, in the time t=10, the value of a state will only depend on the action, as $V_t+1(x)=0$ as initially set, thus, each value for an action is equal, which will not introduce any selection pressure for the policy.
-Thus, we define the policy $s$ as the minimal taken item size for each time t and state x, where $s_x \in {0,1,2,...,x}$, thus, we can calculated the value as the expected value of action set 
+However, because of doing backward induction and the initial value for each state is zero, in the time t=10, the value of a state will only depend on the action, and $V_t+1(x)$ will introduce no diversity for any $weight_t<x$, thus, we define the policy $s$ as the minimal taken item size for each time t and state x, where $s_x \in {0,1,2,...,x}$, for the correctness, we will prove that in section \ref{sec:1.a}.
 
-Then the expected reward for such a $s$ is:
+The expected average reward for such a $s$ is:
 \begin{equation}
     \begin{aligned}
     reward(s)  
@@ -74,6 +72,7 @@ The new value function can be defined as:
 \end{equation}
 where $p(c=c')=0.1$ for all $c\in \{1,2,...,10\}$
 \subsection{a) Correctness proof}
+\label{sec:1.a}
 As discussed in the last section, we take the maximal taken size $s$ as the optimal policy, thus, with backward induction, we can conclude that the expected reward would have a higher possibility to gain a better reward. To prove the policy correctness, it is equalient to prove that $V_t(x) \leq V_t(y), \forall x < y,t\in T$
 
 Proof:
@@ -115,7 +114,7 @@ While With $t<10$, the optimal value for a state x would be:
  
 Thus, for all $x<y$, any $t \in T$, it always holds that $V_t(x)<V_t(y)$
 
-Now return to the problem, it is also optimal to take item size smaller than s, because the remaining capacity would be higher than expected optimal, where the value would be higher. 
+Now returning to the problem, it is also optimal to take item size smaller than s, because the remaining capacity would be smaller than the expected optimal, and therefore, a higher value than the optimal solution if take item of size s. 
 
 \subsection{Hypotheses}
 \begin{enumerate}[label=(\roman*)]
@@ -130,12 +129,20 @@ Now return to the problem, it is also optimal to take item size smaller than s, 
 %For this specific assignment, this means that:
 %-Copying the provided value function as given is not sufficient. Explain why it makes sense and don’t forget to add the base cases/boundary conditions.
 %-Just sta>ng that you did a simula>on is not sufficient. Explain how this was done / what was exactly simulated and what was used from your solution in the first part.
-\subsection{Algorithm Design}
+\subsection{Algorithm Implementation}
 
-%some setting
+As discussed above, the possible state set would be $X = {0,1,2,3,...,10}$, and time set $T = {1,2,3,...,10}$, thus, we implement a policy matrix with size $11 * 10$, while value set $V$ need to take account the beginning state, we add one more row $V_{11}$ all set to zero.
 
-\subsubsection{Implementation}
-the possible state set would be $X = {0,1,2,3,...,10}$, and time set $T = {1,2,3,...,10}$, thus, we implement a policy matrix with size 11 * 10, while value set $V$ need to take account the beginning state, we add one more row with set to zero.
+Since the problem starts as time 0 and state 10, the expected revenue would be $V_0[10] = 3.40634474$
+
+For the test of the policy $Alpha$, we start with initializing a random weight list of size $|T|=10$, each between 1 and 10, then for each item, with an initial state of $x=10$, if $weight_t \leq Alpha_t[x]$, then do the transition $x=x-weight_t$, and the reward increase by one $v=v+1$. Else, move to the next item without any change. The final value at time 10 would be the optimal revenue.
+
+The test will run 1000 times, and the average of the values should be close to the expected revenue of our policy, where we have hypothesis 1.
+
+Additionally, there will also be the chance that the deterministic reward is higher using the optimal policy since we have an upper bound for the taken item weight that $s-weight_s \geq 0$, while in a deterministic method, the decision is only restricted by the state where $x-weight_t \geq 0$, and one can also decide not to take an item smaller than $s$, this introduce the difference. Therefore, if a different decision at some time is made and has an influence on the final revenue, this should also be shown in the leftover weight
+Regarding that in the optimal policy, we have the difference $\min(x-s) = 0$ and $\max(x-s)=6$
+
+To test its correctness, we also implement a backward induction method to find the deterministic best reward, and compare it 
 
 
 \subsection{Experimental design and setup}
@@ -173,7 +180,7 @@ the possible state set would be $X = {0,1,2,3,...,10}$, and time set $T = {1,2,3
     \label{fig:gain}
 \end{figure*}
 
-average result close to the expected optimal, scale the number of runs will change the number, but the experiments result is bigger, as plotted in figure \ref{fig:weightdist}, the reason might be the distribution of items weights not strictly align to 0.1 probability, more specifically, with seed 42, the average weight of items is 5.4972 
+average result close to the expected optimal, scale the number of runs will change the number, but the result of the experiment is bigger, as plotted in figure \ref{fig:weightdist}, the reason might be the distribution of items weights not strictly align to 0.1 probability, more specifically, with seed 42, the average weight of items is 5.4972 
 \subsection{Results}
 \begin{figure}[htbp]
     \centering
