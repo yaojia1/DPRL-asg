@@ -11,7 +11,6 @@ The structure of this report is as follows: We will begin by introducing the mat
 %At first, you should explain what the problem is that you are going to solve. What are your assumptions and why do they make sense or where do they deviate from reality.
 \begin{table}
     \centering
-    \caption{Parameter applying to both EAs}
     \label{tab:my_label}
     \begin{tabular}{@{}cc@{}}
      \hline %\midrule
@@ -22,8 +21,9 @@ The structure of this report is as follows: We will begin by introducing the mat
         Item weight probability & 0.1 \\
         Experiment runs & 1000\% \\\hline
     \end{tabular}
+    \caption{Parameter values}
 \end{table}
-In the knapsack problem, the item weights are unknown upfront. Therefore, at each time step, the player needs to decide whether to take an item based on its individual weight and the remaining capacity of the knapsack, whose total size is fixed at the beginning. Specifically, the sizes and other parameters are presented in Table \ref{tab:my_label}.
+In the knapsack problem, the item weights are unknown upfront. The sizes and other parameters are presented in Table \ref{tab:my_label}.
 
 To formulate this problem, we consider each action as one time step $t \in T: \{1, 2, \ldots, 10\}$. The action set for each time step depends only on the time and the state $x$, where $x \in X = \{0, 1, 2, \ldots, 10\}$, representing the remaining capacity of the knapsack. Since one mustn't take an item larger than the remaining capacity, we have the following equation for the action set, as shown in Equation \ref{eqo:1}:
 
@@ -83,26 +83,28 @@ V_t(x) = & \max_{s \in \{0,1,2,\ldots,x\}}\left(\text{reward}(s) + \sum_{i=0,x-c
 \end{equation}
 
 Here, $p(c=c') = 0.1$ for all $c \in \{1,2,\ldots,10\}$.
-
+The expected reward has a higher probability of yielding a better reward
 
 \subsection{Correctness Proof: Answer to Q a)}
 \label{sec:1.a}
 
-As discussed in the previous section, we consider the maximal taken size $s$ as the optimal policy. With backward induction, we aim to show that the expected reward has a higher probability of yielding a better reward. To prove the correctness of this policy, it is equivalent to demonstrate that $V_t(x) \leq V_t(y)$ for all $x < y$ and $t \in T$.
+%As discussed in the previous section, we consider the maximal taken size $s$ as the optimal policy. With backward induction, we aim to show that the expected reward has a higher probability of yielding a better reward. 
+
+To prove the correctness of this policy, it is equivalent to demonstrate that $V_t(x) \leq V_t(y)$ for all $x < y$ and $t \in T$.
 
 Proof:
 
-Suppose that at time $t$, the state transitions for $x$ and $y$, where $x < s$, and the optimal policy is $s$. The resulting values for time $t+1$ can be expressed as:
+Suppose that at time $t$, the state transitions for $x$ and $y$, where $x < s$, and the optimal policy is $s$. %The resulting values for time $t+1$ can be expressed as:
 
-\begin{equation}
-V_{t}(x) = 
-\begin{cases}
-V_{t+1}(x), & \text{if } weight_t \ge x \\
-\max(V_{t+1}(x), V_{t+1}(x - weight_t) + 1), & \text{otherwise}
-\end{cases}
-\end{equation}
+%\begin{equation}
+%V_{t}(x) = 
+%\begin{cases}
+%V_{t+1}(x), & \text{if } weight_t \ge x \\
+%\max(V_{t+1}(x), V_{t+1}(x - weight_t) + 1), & \text{otherwise}
+%\end{cases}
+%\end{equation}
 
-At the beginning, the value of each state is 0, and the value only depends on the immediate rewards. Specifically, at time $t=10$:
+In the beginning, the value of each state is 0, and the value only depends on the immediate rewards. Specifically, at time $t=10$:
 
 \begin{equation}
 \text{reward}_{t}(x) = 
@@ -137,7 +139,7 @@ Now, with $t < 10$, the optimal value for a state $x$ would be in the following 
 
 Thus, for all $x < y$ and for any $t \in T$, it always holds that $V_t(x) \leq V_t(y)$.
 
-Returning to the problem, it is also optimal to take an item size smaller than $s$ because the remaining capacity would be higher than the expected capacity. Therefore, this leads to a higher value than the optimal solution if an item of size $s$ is taken.
+Returning to the problem, it is also optimal to take an item size smaller than $s$ because the remaining capacity would be higher than taking an item of weight $s$. Therefore, this leads to a higher expected value in further time steps.
 
 \subsection{Hypotheses}
 
@@ -158,67 +160,77 @@ Based on the analysis presented above and the final optimal policy, we can formu
 \subsection{Algorithm Implementation and Expected Maximal Reward}
 \label{sec:alg}
 
-As discussed previously, the possible state set is defined as $X = \{0,1,2,3,\ldots,10\}$, and the time set as $T = \{1,2,3,\ldots,10\}$. We implement a policy matrix with a size of $11 \times 10$. The value set $V$ needs to account for the beginning state, so we add one more row, $V_{11}$, all set to zero.
+%As discussed previously, the possible state set is defined as $X = \{0,1,2,3,\ldots,10\}$, and the time set as $T = \{1,2,3,\ldots,10\}$. 
+We implement a policy matrix with a size of $11 \times 10$. The value set $V$ needs to account for the beginning state, so we add one more row, $V_{11}$, all set to zero.
 
 Since the problem begins at time 0 and state 10, the expected maximal reward is $V_0[10] = 3.40634474$.
 
-To test the policy matrix $Alpha$, we start by initializing a random weight list of size $|T| = 10$, with each weight value between 1 and 10. For each item, with an initial state of $x=10$, if $weight_t \leq Alpha_t[x]$, then we perform the transition $x=x-weight_t$, and the reward increases by one ($v=v+1$). Otherwise, we move to the next item without any change. The final value at time 10 represents the optimal revenue.
+To test the policy matrix $Alpha$, in simulation, we initialize a random weight list of size $|T| = 10$. For each item, with an initial state of $x=10$, if $weight_t \leq Alpha_t[x]$, then we perform the transition $x=x-weight_t$, and the reward increases by one ($v=v+1$). Otherwise, we move to the next item without any change. The final value at time 10 represents the optimal revenue.
+
+\subsection{Experimental Design and Setup}
 
 In theory, the average of the values obtained should be close to the expected revenue of our policy, aligning with Hypothesis 1.
 
 Furthermore, there is a chance that the deterministic reward is higher when using the optimal policy (Hypothesis 2). This is due to the upper bound for the taken item weight, which ensures that $s - weight_s \geq 0$. In a deterministic method, the decision is only restricted by the state where $x - weight_t \geq 0$, and one can also decide not to take an item smaller than $s$. This introduces a difference. Therefore, if different decisions are made at some time and have an influence on the final revenue, this should also be reflected in the leftover weight.
 
-Regarding the optimal policy, we have the difference $\max(x-s) = 6$ where $x = 10$ an $s = 4$, so the biggest difference in the remaining weight should be smaller than 10.
+Regarding the optimal policy, we have the difference $\max(x-s) = 6$ where $x = 10$ and $s = 4$, so the biggest difference in the remaining weight should be smaller than 10.
 
 To test the correctness of the algorithm, we also implement a backward induction method to find all deterministic best rewards and compare them with the optimal result.
 
-\subsection{Experimental design and setup}
-
-%Report your results
-%You should report all (requested and/or relevant) results in a meaningful way. Report on the exact outcomes or provide plots, whatever makes the most sense in the situa>on. The goal should be that the reader gets presented all the insights that you want to show, in a clear way
-
-We simulate the process 1000 times under the optimal policy, make a
-histogram, and compute the average reward. As discussed in section \ref{sec:alg}, we also run the deterministic algorithm to find the best reward and related remaining weight. 
-
+We conducted simulations of the process 1000 times under the optimal policy to generate insights into its performance. As discussed in Section \ref{sec:alg}, we also ran the deterministic algorithm to find the best reward and the related remaining weight.
 
 \section{Results and Discussion}
-%figures
+
+% Figures
 \begin{figure*}[htbp]
     \centering
-    \begin{subfigure}[htbp]{0.25\textwidth}
+    \begin{subfigure}[htbp]{0.24\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{fig/asg1_reward_hist.png}
-        \caption{rewards histogram over 1000 runs}
-        \label{fig:fig_1}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[htbp]{0.25\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{fig/asg1_reward_diff.png}
-        \caption{correctness}
+        \includegraphics[width=\textwidth]{fig/asg1_ploicymap.png}
+        \caption{Optimal policy heat map}
         \label{fig:fig_2}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[htbp]{0.25\textwidth}
+    \begin{subfigure}[htbp]{0.24\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig/asg1_reward_hist.png}
+        \caption{Rewards histogram over 1000 runs}
+        \label{fig:fig_1}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[htbp]{0.24\textwidth}
         \centering
         \includegraphics[width=\textwidth]{fig/asg1_weight_dist.png}
         \caption{Item weight distribution}
         \label{fig:weightdist}
     \end{subfigure}
     \hfill
-    \begin{subfigure}[htbp]{0.25\textwidth}
+    \begin{subfigure}[htbp]{0.24\textwidth}
         \centering
         \includegraphics[width=\textwidth]{fig/asg1_weight_diff.png}
-        \caption{Leftover weight difference for different reward}
+        \caption{Leftover weight difference}
         \label{fig:weightdiff}
     \end{subfigure}
-    %\caption {}
-    \label{fig:gain}
 \end{figure*}
-The histogram of the optimal reward is shown in figure \ref{fig:fig_1}, and the average revenue is 3.442, close to the expected optimal, which examines hypothesis 1. Comparing with the deterministic average result of 3.542, the optimal policy can work well. Apart from that, we also discover that the result of the experiment is also influence by the weight distribution and the run times, with 1000 runs, the average result is bigger than the expected optimal, which might mean the distribution of items weights is not strictly align to 0.1 probability, more specifically, with seed 42, the average weight of items is 5.4972. As plotted in figure \ref{fig:weightdist}, the percentage of weight 1 is higher than average which might lead to higher rewards for some of the runs. While scale the experiment runs, this number would getting closer to the optimal expect reward. Prove the effeteness of the algorithm.
 
-Additionally, as plotted in figure \ref{fig:weightdiff}, the two hills might represent the two cases in hypothesis 2.
+\begin{table}
+    \centering
+    \caption{Experiment results}
+    \label{tab:my_label}
+    \begin{tabular}{cc@{}cc @{}cc @{} cc@{}cc}
+     \hline %\midrule
+        - & value(avg) & value(std) & left weight(avg) \\ \hline
+        stochastic & 3.442 & 0.920 & 1.495\\
+        deterministic & 3.542 & 0.914& 0.6\\
+        \hline
+    \end{tabular}
+\end{table}
+
+The heatmap of the policy and the histogram of the optimal reward is shown in Figure \ref{fig:fig_1} and \ref{fig:fig_2}, and the average revenue is 3.442, which is close to the expected optimal, confirming Hypothesis 1. Comparing this with the deterministic average result of 3.542, the optimal policy performs well. It's important to note that the results of the experiment can also be influenced by the weight distribution and the number of runs. With 1000 runs, the average result is slightly higher than the expected optimal. This could be due to the distribution of item weights not strictly adhering to the 0.1 probability. For example, with seed 42, the average weight of items is 5.4972. As plotted in Figure \ref{fig:weightdist}, the percentage of weight 1 is higher than the average, which might lead to higher rewards in some runs. Scaling up the experiment runs would likely bring the result closer to the optimal expected reward, thereby proving the effectiveness of the algorithm.
+
+Additionally, as shown in Figure \ref{fig:weightdiff}, the two peaks might represent the two cases mentioned in Hypothesis 2.
 
 \section{Conclusion}
-In this report, we have presented a thorough introduction to the design of the backward induction method, and how to solve a stochastic finite-horizon dynamic decision problem. Through a comparative analysis of their performance compared with the deterministic result, we have proved that the optimal policy could work well, and the average 
+In this report, we provided a detailed introduction to the design of the backward induction method and how to solve a stochastic finite-horizon dynamic decision problem. Through comparative analysis of its performance compared with the deterministic result, we have demonstrated that the optimal policy performs well. The average
+
 %\newpage
